@@ -254,13 +254,15 @@ xxx
 这个等式解释了为什么∇C被成为导数向量：∇C取决于v的变化继而改变了C，这很符合导数的定义。更加有让人兴奋的是，这帮助我们找到了让ΔC成为负值的方法。加入我们选择Δv=−η∇C
 xxxx
 这里η是一个小的正的参数(称作学习率)。图(9)中的等式告诉我们：ΔC≈−η∇C⋅∇C=−η‖∇C‖2。由于‖∇C‖2≥0，所以ΔC≤0。如果我们根据图(10)的等式选择v，就可以保证C永远在减少(也基于等式9中的无限趋近)？？？。 这恰好是我们所需要的。所以我们将等式10定义为我们梯度下降算法中，小球运动的定律。我们用等式10中的定义来计算Δv的数值，如何把小球的位置v移动这么多(Δv)：
-v→v′=v−η∇C.(11)
-xxxx
+
+ v→v′=v−η∇C.(11)
+
+
 然后我们再次应用这个更新后的定律，来进行下一次移动。我们持续不断地这么做，一次又一次，我们就可以不断得减少C，直至到达最低点。
   总结一下，梯队下降算法工作的原理是通过不断计算导数∇C，然后使之向相反的方向移动，顺着山坡往下移动。视觉化起来就像下图：
 
 
-
+![梯度下降小球](img/16.png)
 
 
 
@@ -269,46 +271,53 @@ xxxx
   前述梯度下降算法中，C函数仅有两个变量。当C有更多的变量时，仍然是适用的。如果C函数拥有m个变量，v1,...,vm. ΔC的改变由Δv引起，Δv=(Δv1,…,Δvm)T。
 xxx
 
+
 ΔC≈∇C⋅Δv,
 
 
 这里∇C是一个向量：
-xxxx （13）
+![等式13](img/14.png)
 
 
-在两个变量的情况下，我们可以选择Δv=−η∇C,(14)
+在两个变量的情况下，我们可以选择
+
+Δv=−η∇C   (14)
 
 这样可以保证ΔC为负值。这样一直沿着这个梯度下去，就可以得到一个最小值，即使当C有非常多的变量，只需要重复更新这个规则就可以了：
-v→v′=v−η∇C(15)
+
+v→v′=v−η∇C  (15)
 
 你可以认为这个更新的规则就是在定义梯度下降算法。通过这种方法，只要重复地改变V的位置，就可以找到C函数的最小值。这个规则有时候并不成立，可能会出现一些状况，梯度算法不能找到C函数的最小值，在稍后的章节中我们会讨论这一点。但是，大部分时候，梯队下降算法工作得非常好。在神经网络中我们会发现这是一个十分有用的最小化代价函数的方法。这样就可以帮助网络学习。
    实际上，我们甚至可以意识到在寻找最小值时，梯度下降算法甚至是最优的算法。假如我们想让Δv沿着C下降最多的地方移动。这等同于最小化ΔC≈∇C⋅Δv。我们将会限制移动的大小，这样‖Δv‖=ϵ就是一个小的确定数，ϵ>0。也就是说，通过一个小的固定大小的移动，我们希望找到能够让C减小最多的那个方向。可以证明的是，最小化∇C⋅Δv时选择的Δv是−η∇C，这里η=ϵ/‖∇C‖取决于 ‖Δv‖=ϵ的大小约束，所以，梯度下降可以认为是不断向减少C最多的方向前进一小步的过程。
 
-## 联系
+## 练习
 
-* 证明最后一段的推断。提示：如果对你不太熟悉柯西-施瓦茨不等式，先熟悉一下它会有些帮助。
+* 证明最后一段的推断。提示：如果对你不太熟悉[柯西-施瓦茨不等式](http://en.wikipedia.org/wiki/Cauchy–Schwarz_inequality)，先熟悉一下它会有些帮助。
 * 我解释了当C函数有两个和多个变量时的梯度下降算法，当C是只有一个变量时是怎么样的呢？你看通过几何学的方法来解释此时的梯度下降算法是怎么样的吗？
 
 人们研究过很多梯度下降的变形算法，包括更加接近似于模仿真实物理小球的梯度下降。模仿小球的变形算法有一些优势，但也有一个明显的缺点，必须计算C的二次偏导数，这会是否消耗计算资源。假如我们打算计算二次偏导数：∂2C/∂vj∂vk。如果有100万个vj变量，那么我们就需要计算1000亿个(100万的平方)二次偏导数。计算量代价非常高。好在，有方法避免这个问题，寻找梯度下降的替代方法也是一个活跃的研究领域。此书中，我们将使用梯度下降算法作为神经网络学习的主要方法。
   
 在神经网络中如何运用梯度下降呢？方法是通过梯度下降方法来找到权重wk和权重bl来最小化等式6中的代价函数。为了说明它是如何工作的，我们得重申一下梯度下降的更新规则。首先，使用权重和偏移量替换掉变量vj。换言之，我们的位置有两个部分组成，wk和bl，所以∇C有两个对应的部分组成∂C/∂wk和∂C/∂bl。 替换元素后的后的梯度下降如下：
-xxxx（16） （17）
+![等式16 17](img/11.png)
 
 重复应用以上更新规则，就可以从“上坡上滚下来”了，这样我就可以得到一个最小值。换言之，这是在神经网络中可以使用的学习方法。
 
 在应用梯度下降算法时，有几个挑战。我们会在稍后几章中详细探讨。为了理解问题在哪里，我们回头看一下等式(6)中的二次代价函数。注意到这个代价函数的形式为C=1n∑xCx，它是每一个训练样本代价函数Cx(Cx= ‖y(x)−a‖22)的平均值。实际应用中，为了计算∇C的导数，需要计算每一个训练输入x对应∇Cx的导数，然后取他们的平均值，∇C=1/n∑x∇Cx。不幸的是，当训练集数量很大的时候，这将耗费非常多的时间。
   一个加速学习的办法，称为随机梯度下降算法。方法是从训练集中随机选择一个小样本，然后计算小样本的∇Cx。通过计算这个小样本的平均值，可以快速得到真正∇C导数的良好近似值。这样就可以加速梯队下降算法的执行，继而提升学习的效率了。
   下面详细讲一下随机梯队下降算法。从训练样本中随机选取了m个小样本数据，把这m个样本编号为X1，X2，..., Xm,并称之为mini-batch(迷你小队)。前提是样本量m足够大，这样∇CXj的均值接近于所有∇CX的均值。
-xxxx (18)
+
+![等式18](img/10.png)
 
 上个式子中第二个求和是对所有训练集的求和。所以可以得到如下公式：
-[image](19)
+
+![等式19](img/9.png)
 
 这个等式再次验证了可以通过对随机选择的迷你小队求导来估算整体样本的导数。
 
 下面我们将看一下如何在再神经网络学习中运用它。加入wk和bl代表神经网络中的权重和偏移量。随机梯度下降随机从学习样本中选择一个样本的迷你小队，然后通过对样本小队求导后求平均数。如下图：
-[image 20]
-[image 21]
+
+![等式20 21](img/8.png)
+
 这里是使用的是对迷你小队训练集xj求和。然后，我们通过随机的方法取另外一组迷你小队继续这个训练，不断重复这一过程，知道用尽了训练集，也就是我们用尽了一代训练集。然后，我们启动新的一代训练集。
   顺带提一句，实际应用中，代价函数和迷你小队训练集可能会和前述我们讨论的有些不同。在等式(6)中，我们增加因子(1/n)来计算整体的代价函数。有时候，人们会忽略掉1/n这个因子，只是把所有的代价函数求和而不是求平均值。当训练集数量无法提前预知的情况下会非常有用，例如，当发生在训练数据会时时生成的时候。同样，有时，迷你小队计算时也会忽略掉1/m。概念上，这会造成一些影响，因为这意味着重新定义了学习率η。当对不同工作进行细致对比时，需要当心这一点。
   我们可以把随机梯度算法看做政治投票：做个民意调查也要比举行一次全民选举简单得多。举个例子，MNIST中，训练集的大小为n=6000，选择迷你小队为m=10，这意味着我们估算导数可以加速6000倍。当然，估算并不完美，存在统计波动。不过已经足够了。我们真正关心的是向减少C的方向移动，所以并不需要对导数计算那么精确。实际使用中，随机梯度下降是神经网络学习的一个重要技术， 使用很普遍，它是大多数此书中提到的神经网络学习技术的基础。
@@ -323,87 +332,341 @@ wk→w′k=wk−η∂Cx/∂wk 以及 b'l->bl=bl-η∂Cx/∂bl.如何，我们选
 ## 应用网络，对数字进行分类
 
 好吧，基于我们学习到的随机梯度下降算法，以及MNIST训练集，我们开始写一个程序来识别手写数字。仅仅短短的74行Python(2.7)代码就足够了。首先，我们需要获取MNIST数据。如果你是git用户，你可以通过拷贝下面的代码获取它：
-git clone https://github.com/mnielsen/neural-networks-and-deep-learning.git
-如果不是git的用户，你也可以在这里下载代码和数据。【Hpyer link】
+`git clone https://github.com/mnielsen/neural-networks-and-deep-learning.git`
+如果不是git的用户，你也可以在[这里](https://github.com/mnielsen/neural-networks-and-deep-learning/archive/master.zip)下载代码和数据。
 
 顺便提一句，在介绍MNIST数据的时候，我说过它是由6万条训练图片和1万条测试图片构成的。这是个官方的定义。实际上，我的划分会少有不同。先不用管测试图片，把6万训练图片分文两部分，其中的5万条用作训练神经网络，另外1万条用作验证。这一章，我们不用用到验证数据，不过在后续章节中，当你会发现，当你试图弄清楚如何设置超级参数(hyper-parameters，例如学习率，这些参数我们的学习算法并不能直接选定)时,验证数据会十分有用。尽管MNIST原始文档中并没有验证数据这部分，许多人这样使用MNIST数据，在神经网络中使用验证数据也是非常普遍的做法。从现在开始，当我提到MNSIT数据时，我指的是5万图片集，而不是6万了。
-   除此之外，我们还需要python的一个扩展库，叫做Numpy来完成快速的线性代数计算。如果你还没装Numpy，可以从这里获得[hyperlink]
+   除此之外，我们还需要python的一个扩展库，叫做[Numpy](http://numpy.org/)来完成快速的线性代数计算。如果你还没装Numpy，可以从[这里](http://www.scipy.org/install.html)获得
 
 解释一下神经网络代码的核心特性。核心模块是网络类，用来代表神经网络。下面是初始化网络这个对象的代码：
-xxxx
+
+```
+class Network(object):
+
+    def __init__(self, sizes):
+        self.num_layers = len(sizes)
+        self.sizes = sizes
+        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+        self.weights = [np.random.randn(y, x) 
+                        for x, y in zip(sizes[:-1], sizes[1:])]
+
+```
 
 代码中，sizes列表代表的是对应层的神经元数量。例如，如果我们打算创建一个网络对象，第一层拥有2个神经元，第二层3个神经元，最后一层拥有1个神经元，那么网络代码如下：
-net = Network([2,3,1])
+` net = Network([2,3,1]) `
 代码中的权重和偏移量都是随机的初始化值，Numpy np.random.randn函数生成了均值为0方差为1成正态分布的值。这个随机初始化是随机梯度下降的起点。后续章节中，我们会用到更好的初始化权重和便宜的方法，不过这个算法中我们先就这样。请注意，网络初始化代码假设第一层为输入层，所以没有设置偏移量，因为它只用在计算后续层的输出上。
   第二个需要注意的是，偏移量和权重存储在一个Numpy矩阵中。例如net.weights[1]存储的是第二层到第三层神经元之间的所有权重，(Python的列表索引号是从0开始的，所以他指的不是第一和第二层之间的权重)。net.weights[1]看起来有些啰嗦，它仅仅代表矩阵w。它仅仅是一个矩阵，矩阵中wjk代表的是第二层的第K个神经元和第三层的第J个神经元之间的连接。j和k的顺序看起来有些奇怪。把j和k的顺序颠倒过来户不会更有意义一些？这么做的一个明显的好处是第三层神经元的激活向量是：
 a′=σ(wa+b).(22)
+![等式22](img/6.png)
 
 这个等式很有意思，我们拆开研究一下。a是第二层神经元的激活向量。为了得到a′，我们把a与权重向量x相乘，并且加上了偏移量矩阵b。如何，我们对向量wa+b中的每一个实体（Entry）求σ函数(称之为向量化σ函数)。很容易就可以看到，在计算sigmoid神经元的时候，等式22和等式4的结果是相同。
 
 
 ## 练习
-* 使用单个实数(非向量)的方式来重写等式22，并且证明它与等式4的计算结果相同。
+* 使用单个实数(非向量)的方式来重写等式22，并且证明它与等式(4)的计算结果相同。
 
 有了这些，就容易通过Network的实例写代码计算输出了。首先，定义一个sigmoid函数：
-xxx
+
+```
+def sigmoid(z):
+    return 1.0/(1.0+np.exp(-z))
+
+```
 
 这里z是是一个Numpy向量。Numpy以向量的形式逐个元素自动执行sigmoid函数。
 
 如何，我们为网络类增加一个前馈函数，给定一个输入，计算出来对应的输出，对每一次执行等式22的计算。
 
+
+```
+ def feedforward(self, a):
+        """Return the output of the network if "a" is input."""
+        for b, w in zip(self.biases, self.weights):
+            a = sigmoid(np.dot(w, a)+b)
+        return a
+
+```
+
 当然，我们主要的目的是让网络类做学习。定义SGD函数来实现随机梯度下降算法。代码如下，一些地方看起来有些神秘，列完代码后，我们将分开讲解一下。
 
 training_data是一个(x,y)的元祖列表。代表了训练输入和对应的输出。变量epochs和mini_batch_size分别代表了世代的数量和迷你小队的大小。eta是学习率。如果提供了可选的参数test_data，在每个世代训练结束，程序就会评估一次网络，并把进度打印出来。这对跟踪进度很有用，不过同时也拖慢了进度。
   顺着代码的执行，每个世代起始于随机打乱训练数据，如何选取一定数量放入mini-batches。这是一个随机选取训练数据的简便方法。如何，对每个mini_batch执行一步梯度下降。是通过这段代码完成的：self.update_mini_batch(mini_batch, eta)。仅用mini_batch，就可以通过一次迭代更新更新网络所有的权重和偏移量。下面是更新update_mini_batch的代码：
-xxxx
+
+```
+ def update_mini_batch(self, mini_batch, eta):
+        """Update the network's weights and biases by applying
+        gradient descent using backpropagation to a single mini batch.
+        The "mini_batch" is a list of tuples "(x, y)", and "eta"
+        is the learning rate."""
+        nabla_b = [np.zeros(b.shape) for b in self.biases]
+        nabla_w = [np.zeros(w.shape) for w in self.weights]
+        for x, y in mini_batch:
+            delta_nabla_b, delta_nabla_w = self.backprop(x, y)
+            nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
+            nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+        self.weights = [w-(eta/len(mini_batch))*nw 
+                        for w, nw in zip(self.weights, nabla_w)]
+        self.biases = [b-(eta/len(mini_batch))*nb 
+                       for b, nb in zip(self.biases, nabla_b)]
+
+```
+
+
 
 大部分工作是这一行代码完成的：
-delta_nabla_b, delta_nabla_w = self.backprop(x, y)
+`  delta_nabla_b, delta_nabla_w = self.backprop(x, y) `
 
 这段代码激发了反向传播算法，它能够快速计算代价函数的导数。简单讲，update_mini_batch会计算迷你小队中每一个训练样本的这些导数，然后，正确地更新self.weight和self.biases.
 我们先不详细讨论self.backprop的代码，下一章我们将详细讨论反向传播是怎么回事，到时候我会详细介绍这个行数的代码。现在，先假设它是这样工作的，它可以返回训练样本x对应代价函数的导数。
-  现在我们看下整段代码，它包含了文档注释，我刚刚忽略了这部分内容。除了self.backprop，程序可以自我解释。正如前面提到过的，self.SGD和self.update_mini_batch完成了重任。self.backprop方法使用了一些其它的函数来完成导数的计算，包括sigmoid_prime，它计算了σ函数的导数；还有self.cost_derivative，这里先不做太多解释。看下文档注释或者代码就可以了解他们的大意(甚至是一些细节)。下一章我们会详细讲述这一部分。程序看起来有些长，这是因为为了方便理解，它包含了大量的文档的注释。实际上，除去空行和注释文字，代码只仅仅74行。这些代码可以从Github上获得[Hyper Link]
+  现在我们看下整段代码，它包含了文档注释，我刚刚忽略了这部分内容。除了self.backprop，程序可以自我解释。正如前面提到过的，self.SGD和self.update_mini_batch完成了重任。self.backprop方法使用了一些其它的函数来完成导数的计算，包括sigmoid_prime，它计算了σ函数的导数；还有self.cost_derivative，这里先不做太多解释。看下文档注释或者代码就可以了解他们的大意(甚至是一些细节)。下一章我们会详细讲述这一部分。程序看起来有些长，这是因为为了方便理解，它包含了大量的文档的注释。实际上，除去空行和注释文字，代码只仅仅74行。这些代码可以从Github上获得[这里](https://github.com/mnielsen/neural-networks-and-deep-learning/blob/master/src/network.py)
+
+
+```
+"""
+network.py
+~~~~~~~~~~
+
+A module to implement the stochastic gradient descent learning
+algorithm for a feedforward neural network.  Gradients are calculated
+using backpropagation.  Note that I have focused on making the code
+simple, easily readable, and easily modifiable.  It is not optimized,
+and omits many desirable features.
+"""
+
+#### Libraries
+# Standard library
+import random
+
+# Third-party libraries
+import numpy as np
+
+class Network(object):
+
+    def __init__(self, sizes):
+        """The list ``sizes`` contains the number of neurons in the
+        respective layers of the network.  For example, if the list
+        was [2, 3, 1] then it would be a three-layer network, with the
+        first layer containing 2 neurons, the second layer 3 neurons,
+        and the third layer 1 neuron.  The biases and weights for the
+        network are initialized randomly, using a Gaussian
+        distribution with mean 0, and variance 1.  Note that the first
+        layer is assumed to be an input layer, and by convention we
+        won't set any biases for those neurons, since biases are only
+        ever used in computing the outputs from later layers."""
+        self.num_layers = len(sizes)
+        self.sizes = sizes
+        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+        self.weights = [np.random.randn(y, x)
+                        for x, y in zip(sizes[:-1], sizes[1:])]
+
+    def feedforward(self, a):
+        """Return the output of the network if ``a`` is input."""
+        for b, w in zip(self.biases, self.weights):
+            a = sigmoid(np.dot(w, a)+b)
+        return a
+
+    def SGD(self, training_data, epochs, mini_batch_size, eta,
+            test_data=None):
+        """Train the neural network using mini-batch stochastic
+        gradient descent.  The ``training_data`` is a list of tuples
+        ``(x, y)`` representing the training inputs and the desired
+        outputs.  The other non-optional parameters are
+        self-explanatory.  If ``test_data`` is provided then the
+        network will be evaluated against the test data after each
+        epoch, and partial progress printed out.  This is useful for
+        tracking progress, but slows things down substantially."""
+        if test_data: n_test = len(test_data)
+        n = len(training_data)
+        for j in xrange(epochs):
+            random.shuffle(training_data)
+            mini_batches = [
+                training_data[k:k+mini_batch_size]
+                for k in xrange(0, n, mini_batch_size)]
+            for mini_batch in mini_batches:
+                self.update_mini_batch(mini_batch, eta)
+            if test_data:
+                print "Epoch {0}: {1} / {2}".format(
+                    j, self.evaluate(test_data), n_test)
+            else:
+                print "Epoch {0} complete".format(j)
+
+    def update_mini_batch(self, mini_batch, eta):
+        """Update the network's weights and biases by applying
+        gradient descent using backpropagation to a single mini batch.
+        The ``mini_batch`` is a list of tuples ``(x, y)``, and ``eta``
+        is the learning rate."""
+        nabla_b = [np.zeros(b.shape) for b in self.biases]
+        nabla_w = [np.zeros(w.shape) for w in self.weights]
+        for x, y in mini_batch:
+            delta_nabla_b, delta_nabla_w = self.backprop(x, y)
+            nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
+            nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+        self.weights = [w-(eta/len(mini_batch))*nw
+                        for w, nw in zip(self.weights, nabla_w)]
+        self.biases = [b-(eta/len(mini_batch))*nb
+                       for b, nb in zip(self.biases, nabla_b)]
+
+    def backprop(self, x, y):
+        """Return a tuple ``(nabla_b, nabla_w)`` representing the
+        gradient for the cost function C_x.  ``nabla_b`` and
+        ``nabla_w`` are layer-by-layer lists of numpy arrays, similar
+        to ``self.biases`` and ``self.weights``."""
+        nabla_b = [np.zeros(b.shape) for b in self.biases]
+        nabla_w = [np.zeros(w.shape) for w in self.weights]
+        # feedforward
+        activation = x
+        activations = [x] # list to store all the activations, layer by layer
+        zs = [] # list to store all the z vectors, layer by layer
+        for b, w in zip(self.biases, self.weights):
+            z = np.dot(w, activation)+b
+            zs.append(z)
+            activation = sigmoid(z)
+            activations.append(activation)
+        # backward pass
+        delta = self.cost_derivative(activations[-1], y) * \
+            sigmoid_prime(zs[-1])
+        nabla_b[-1] = delta
+        nabla_w[-1] = np.dot(delta, activations[-2].transpose())
+        # Note that the variable l in the loop below is used a little
+        # differently to the notation in Chapter 2 of the book.  Here,
+        # l = 1 means the last layer of neurons, l = 2 is the
+        # second-last layer, and so on.  It's a renumbering of the
+        # scheme in the book, used here to take advantage of the fact
+        # that Python can use negative indices in lists.
+        for l in xrange(2, self.num_layers):
+            z = zs[-l]
+            sp = sigmoid_prime(z)
+            delta = np.dot(self.weights[-l+1].transpose(), delta) * sp
+            nabla_b[-l] = delta
+            nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
+        return (nabla_b, nabla_w)
+
+    def evaluate(self, test_data):
+        """Return the number of test inputs for which the neural
+        network outputs the correct result. Note that the neural
+        network's output is assumed to be the index of whichever
+        neuron in the final layer has the highest activation."""
+        test_results = [(np.argmax(self.feedforward(x)), y)
+                        for (x, y) in test_data]
+        return sum(int(x == y) for (x, y) in test_results)
+
+    def cost_derivative(self, output_activations, y):
+        """Return the vector of partial derivatives \partial C_x /
+        \partial a for the output activations."""
+        return (output_activations-y)
+
+#### Miscellaneous functions
+def sigmoid(z):
+    """The sigmoid function."""
+    return 1.0/(1.0+np.exp(-z))
+
+def sigmoid_prime(z):
+    """Derivative of the sigmoid function."""
+    return sigmoid(z)*(1-sigmoid(z))
+
+```
+
+
 
 这段代码在识别手写数字的准确性上到底怎么样呢？我们导入MNIST数据看一下。将用到一个辅助程序，mnist_loader.py，稍后会介绍它。然后，我们在Phthon Shell中执行它：
 
+
+```
 >>> import mnist_loader
 >>> training_data, validation_data, test_data = \
 ... mnist_loader.load_data_wrapper()
 
-xxxx
+```
+
+
 
 当然，你也可以在单独的Python程序中执行这段代码。不过在Python shell中，会简单一些。
 
 导入数据之后，我们定义一个包含有30个隐藏层的Network。定义之前，需要引入上述Python程序。
-xxxx[CODE]
+
+```
+>>> import network
+>>> net = network.Network([784, 30, 10])
+
+```
+
 
 最后，我们使用随机梯度下降来学习MNIST 的training_data30个世代。迷你小队的大小设置为10，学习率η设置为3.0。
 
-xxxx [CODE]
+`>>> net.SGD(training_data, 30, 10, 3.0, test_data=test_data)`
+
 
 这段代码执行起来需要一点时间，对于一个2015年通常的机器来说，需要几分钟。我建议你，开始运行之后，继续你的阅读，时不时看一下代码是否有输出就可以了。如果你赶时间，可以减少世代的数量，或者隐藏层的数量，甚至只用训练集的一部分数据。其实，最终的产品代码运行会非常快。Python代码目的是帮助你理解神经网络是如何运行的，没那么强调运行性能。网络训练好之后，可以运行得非常快，几乎在任何计算平台都是如此。得出一组好的权重和偏移量后，我们可以把它们运用在JavaScript中，这样就可以在网页、本地程序或者手机客户端中运行并得到结果。这里有一个训练输出的报告单。报告单展示了每个世代训练结束后，正确识别出的手写数字的数量。可以看到，完成一个世代的学习，就可以从10000个图片中正确识别出来9129个图片，随着世代的增多，识别成功的数量也在逐渐增加。
-  xxxxx[IMAGE]
+
+```
+
+Epoch 0: 9129 / 10000
+Epoch 1: 9295 / 10000
+Epoch 2: 9348 / 10000
+...
+Epoch 27: 9528 / 10000
+Epoch 28: 9542 / 10000
+Epoch 29: 9534 / 10000
+
+```
 在第28世代分类成功率达到了最高值95.42%。这非常鼓舞人心。需要说明的是，当你运行这段程序时，你的结果可能和我的有所不同，那时因为我们为网络选择的初始化权重和偏移量不同。上面展示的是运行了三次中最好的结果。
   把隐藏层级修改为100，重新运行以上代码，这需要更长一段时间(在我的电脑上，每个世代的运行需要十秒左右)。如果你在阅读此段话的同时运行这段代码，在运行代码的同事，最好继续读下去。
-  xxxx [CODE]
+
+```
+>>> net = network.Network([784, 100, 10])
+>>> net.SGD(training_data, 30, 10, 3.0, test_data=test_data)
+
+```
+
+
 这次可以把结果提升到96.59%。至少在这个案例中，提升隐藏层成功提升了运行结果。
 
 为了获得这个精度，我指定了训练的世代数量、迷你小队的大小以及学习率。如前提到的那样，这些就叫做神经网络的超参数，是为了与其他学习算法学习到的参数(权重和偏移量)区别开。如果我们选择的超参数不太好，会得到差的结果。例如，我们选择学习率为η=0.001，
 
-xxxx
+
+```
+>>> net = network.Network([784, 100, 10])
+>>> net.SGD(training_data, 30, 10, 0.001, test_data=test_data)
+```
+
+
 结果就会让人有些灰心：
-xxxxx
+
+```
+Epoch 0: 1139 / 10000
+Epoch 1: 1136 / 10000
+Epoch 2: 1135 / 10000
+...
+Epoch 27: 2101 / 10000
+Epoch 28: 2123 / 10000
+Epoch 29: 2142 / 10000
+```
 
 
 不过，你会发现网络运行的效率在缓慢提升。这在暗示我们可以提升学习率，比如η=0.01.如果这么做，结果会有所改善，这意味着我们可以继续提升学习率。(如果改变后的结果更好，可以尝试做更多的改变)。如果我们继续做下去，我们会发现最终η=1.0(或许它比3.0更优质)，这和我们前面的测试十分接近了。可以看出，即使我们在一开始选择了不太好的超参数，我们也可以得到足够的信息来不断优化这些它们。
 
 总体来说，调试神经网络十分具有挑战性。特别是当刚开始选择超参产生的结果还不足以覆盖随机噪声。假如，我们选取之前使用的30层隐藏神经网络，不过，把学习率设置为η=100.0：
 
-xxxx
+```
+>>> net = network.Network([784, 30, 10])
+>>> net.SGD(training_data, 30, 10, 100.0, test_data=test_data)
+
+```
 
 这样，我们太过了，学习曲线太高了。
 
-xxxx [CODE]
+
+```
+Epoch 0: 1009 / 10000
+Epoch 1: 1009 / 10000
+Epoch 2: 1009 / 10000
+Epoch 3: 1009 / 10000
+...
+Epoch 27: 982 / 10000
+Epoch 28: 982 / 10000
+Epoch 29: 982 / 10000
+
+```
 
 想象一下，我们第一次遇到这个问题的时候。当然基于前面的实验，我们现在知道了应该减小学习率。不过第一次遇到的时候，我们可能不会从输出的结果来判断该怎么做。我们不仅仅会担心学习率，神经网络的所有部分我们都可能觉得有问题。会不是权重和偏移量初始化方式不对造成了学习特别困难？是训练集数量不够，所以无法得到正确的结果？或者世代不够？甚至整个神经网络压根就无法识别手写数字。抑或学习率太低了？太高了？第一次面对这个结果是，你会有些蒙圈。
   
@@ -553,6 +816,10 @@ def vectorized_result(j):
  2006年后，人们开发了一系列的技术，深度神经网络中学习才成为可能。这些深度学习技术基于随机梯度下降算法和反向传播算法，并加入了一些新的技术。这样训练更深更大的神经网络才变得可行。人们现在通常使用5到10个隐藏层。事实证明，在结果许多问题的时候，这么做要远比浅层级神经网络(例如只有一级隐藏网络的神经网络)表现得优秀。原因当然是，深度网络能够建立一个复杂的概念层级。这有些像传统编程语言中，使用模块化设计以及抽象化概念来构建复杂的计算机程序。把深度网络和浅层级网络对比，就像用支持函数及调用的编程语言与去除了调用功能的简单语言作对比。与传统编程语言相比，抽象化在神经网络中形式有些不同，不过同样他们重要。
 
 
-
+$$x_1$$
+$$x_1^2$$
+$$x^2_1$$
+$$x_{22}^{(n)}$$
+$${}^*\!x^*$$    %（“\!” 表示其前后字符之间无间隙）
 
 
