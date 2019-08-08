@@ -1,0 +1,1 @@
+$ w_{k} -> w'_{k} = w_{k} - $\dfrac{η}{m} \sum_{j}{{{\partial f}}\over{{\partial C_{X_{j}}}}}$
