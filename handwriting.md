@@ -200,18 +200,32 @@ xxxx[等式](5)
 
 如果这四个隐藏的神经元都发射了，我们就可以认为数字是0. 当然，这不是唯一的得出数字为0结论的方法。实际上我们可以有需要其他的方法。但看起来在这种情况下，我们可以有信心地说我们认为输入的数字是0.
 
-如何神经网络是这么工作的，我们就可以给出比较有说服力的解释，为什么10个输出要优于4个输出。如果我们有4个输出，第一个输出神经元需要通过输入的数字来决定最显著的比特是什么。但是，把上述简单的图形与最显著的比特关联起来，貌似没有特别容易的办法。很难想象一个数字的一部分是如何和最显著的输出比特关联起来的。？？？？
+假如神经网络是这么工作的，我们就可以给出比较有说服力的解释，为什么10个输出要优于4个输出。如果我们有4个输出，第一个输出神经元需要通过输入的数字来决定最显著的比特是什么。但是，把上述简单的图形与最显著的比特关联起来，貌似没有特别容易的办法。很难想象一个数字的一部分是如何和最显著的输出比特关联起来的。
   
-  现在，如前所述，这仅仅是启发式。刚才的例子中，隐藏层用来探测简单的图形形状，但这并不是说这个三层神经网络必须像我描述的这样工作。或许一个聪明的学习算法可以得出一种权重组合，这样我们就可以仅仅使用4个输出神经元。不过，基于启发式的思考方法，我已经能够很好地描述它的工作机制了，还能在设计好的神经网络时帮你节省很多时间。
+  现在，如前所述，这仅仅是基于现有经验得出的。刚才的例子中，隐藏层用来探测简单的图形形状，但这并不是说这个三层神经网络必须像我描述的这样工作。或许一个聪明的学习算法可以得出一种权重组合，这样我们就可以仅仅使用4个输出神经元。不过，基于启发式的思考方法，我已经能够很好地描述它的工作机制了，还能在设计好的神经网络时帮你节省很多时间。
 
 ## 练习
 
+还是有办法通过二级制的方法表达一个数字的，只要在第三层的基础上增加一层就可以了。新增加的层把前一层的输出转化为二级制表达，如下图所示。假设第三层中数字正确的神经元输出值至少为0.99，否则最大为0.01. 请试着找到合适的权重和偏移量。
 
-的点点滴滴多；大解放军奥拉夫节哀发洛杉矶开发；sdljfjadl ????0807
+![tikz13](http://neuralnetworksanddeeplearning.com/images/tikz13.png)
 
 
-我们将使用符号x代表一个训练集输入。每一个输入训练集x包含了28x28=784个维度的向量。向量的每一个Entry代表了一个图片像素的灰度值。将我们期望的输出表示为y=y(x)，y是一个10维的向量.例如，如果一个训练图片x，代表了数字6，y(x)= (0,0,0,0,0,0,1,0,0,0)T是我们期望的输出结果。这里T是个转置操作，他把一个行向量转换为列向量。
-  我们希望算法能够帮助我们找到合适权重和偏移量，这样对于每一个训练输入x，神经网络的输出都无限接近与y(x).为了评估我们距离这个目标有多远，我们定义了一个cost函数：
+## 学习梯度下降
+
+我们设计了神经网络，那么如何使用它来学习识别数字呢？首先我们需要要给数据集来学习，叫做训练数据集。我们将使用MNIST数据集。它包含了数以万计的手机字体的扫描图片，并且进行了正确的分类。它来自于NIST(United States' National Institute of Standards and Technology 美国国家标准技术研究所)收集的两个数据集的子集，并进行了一些调整。这里是MNIST中的一些图片：
+
+![digits_separate.png](http://neuralnetworksanddeeplearning.com/images/digits_separate.png)
+
+如你所见，实际上这正是我们在本章开头提到过的数字。当然，我们让网络识别训练集之外的图片，以此来测试我们的设计的网络。
+
+MNIST包含了两个部分。第一部分6万个图片，作为训练数据。是由250个人的手写数字经扫描得到的，这些人中的一半来自于美国人口普查局的雇员，另外一部分是高中生。图片为28x28像素的灰阶数据。MNIST的第二部分包含1万张图片，用作测试图片。同样是28x28像素的灰阶。测试数据用来评估神经网络识别数字的准确率。为了保证测试的准确性，测试数据来自于另外250个人(仍然来自于人口调查局和高中生)。这样就可以保证我们我的系统可以识别训练集以外的人写的数字。
+
+&nbsp 我们将使用符号x代表一个训练集输入。每一个输入训练集x包含了28x28=784个维度的向量。向量的每一个Entry代表了一个图片像素的灰度值。将我们期望的输出表示为y=y(x)，y是一个10维的向量.例如，如果一个训练图片x，代表了数字6，y(x)= (0,0,0,0,0,0,1,0,0,0)T是我们期望的输出结果。这里T是个转置操作，他把一个行向量转换为列向量。
+
+&nbsp &nbsp我们希望算法能够帮助我们找到合适权重和偏移量，这样对于每一个训练输入x，神经网络的输出都无限接近与y(x).为了评估我们距离这个目标有多远，我们定义了一个cost函数：
+
+
 
 这里，w代表网络中所有的权重，b代表所有的偏移量，n是输入的数量，sum对所有的输入x进行求和。当然，输出a取决于x，w和b，为了保持表达式的简单，我不会特别强调其中的关联性。标记 ‖v‖只是代表向量v的长度。我们把C称之为二次成本函数。有时我们也称之为聚方误差，简称为MSE。观察二次方差成本函数，我们会看到C(w,b)是个非负数，因为求和的所有项都是非负数。进一步，如果对于所有的输入x，如果y(x)与输出结果a都十分接近时，C(w,b)就会很小，甚至约等于0.如果能够找到合适的权重和偏移量，是的最终的C(w,b)约等于0，这就说明我们的训练算法非常出色。相反，如果C(w,b)的值很大，这意味着y(x)与输出结果a并不接近。所以，我们训练算法的目的是最小化C(w,b)。话句话说，我们的目的是找到最合适的一组权重和一组偏移值，使得成本函数尽量小。我们将使用梯度下降算法来解决这个问题。
   为什么要接受二次成本呢？毕竟我们关心的只是网络是否可以正确地对数字图片进行分类。为什么不直接想办法尽量最大化这个数字，反而去最小化它的代理量度二次成本呢？原因是，在网络中，正确分类后的数字并不是权重和偏移值平滑函数。大多数时候，对权重和偏移量的微小调整，对网络的输出结果(分类出的数字)不会产生任何影响。这样就难以通过调整偏移量和权重来进行不断优化了。而如果用二次成本函数，是可以知道如何通过对权重和偏移量进行微小的变化来不断降低成本的。因此，我们会聚焦于如何最小化二次成本函数，以此来检验分类的准确性。
@@ -401,12 +415,98 @@ xxxx [CODE]
 
 前面，我们跳过了加载MNIST数据的过程，它还是比较直观的。完整起见，我还是把代码贴出来。存储MNIST数据的数据结构在文档注释中有描述。很直观，由元祖和Numpy narray对象列表构成(如果你对ndarrys不够熟悉，把他们当做向量集好了)。
 
-xxxx [CODE]
+’‘’
+mnist_loader
+~~~~~~~~~~~~
+
+A library to load the MNIST image data.  For details of the data
+structures that are returned, see the doc strings for ``load_data``
+and ``load_data_wrapper``.  In practice, ``load_data_wrapper`` is the
+function usually called by our neural network code.
+"""
+
+#### Libraries
+# Standard library
+import cPickle
+import gzip
+
+# Third-party libraries
+import numpy as np
+
+def load_data():
+    """Return the MNIST data as a tuple containing the training data,
+    the validation data, and the test data.
+
+    The ``training_data`` is returned as a tuple with two entries.
+    The first entry contains the actual training images.  This is a
+    numpy ndarray with 50,000 entries.  Each entry is, in turn, a
+    numpy ndarray with 784 values, representing the 28 * 28 = 784
+    pixels in a single MNIST image.
+
+    The second entry in the ``training_data`` tuple is a numpy ndarray
+    containing 50,000 entries.  Those entries are just the digit
+    values (0...9) for the corresponding images contained in the first
+    entry of the tuple.
+
+    The ``validation_data`` and ``test_data`` are similar, except
+    each contains only 10,000 images.
+
+    This is a nice data format, but for use in neural networks it's
+    helpful to modify the format of the ``training_data`` a little.
+    That's done in the wrapper function ``load_data_wrapper()``, see
+    below.
+    """
+    f = gzip.open('../data/mnist.pkl.gz', 'rb')
+    training_data, validation_data, test_data = cPickle.load(f)
+    f.close()
+    return (training_data, validation_data, test_data)
+
+def load_data_wrapper():
+    """Return a tuple containing ``(training_data, validation_data,
+    test_data)``. Based on ``load_data``, but the format is more
+    convenient for use in our implementation of neural networks.
+
+    In particular, ``training_data`` is a list containing 50,000
+    2-tuples ``(x, y)``.  ``x`` is a 784-dimensional numpy.ndarray
+    containing the input image.  ``y`` is a 10-dimensional
+    numpy.ndarray representing the unit vector corresponding to the
+    correct digit for ``x``.
+
+    ``validation_data`` and ``test_data`` are lists containing 10,000
+    2-tuples ``(x, y)``.  In each case, ``x`` is a 784-dimensional
+    numpy.ndarry containing the input image, and ``y`` is the
+    corresponding classification, i.e., the digit values (integers)
+    corresponding to ``x``.
+
+    Obviously, this means we're using slightly different formats for
+    the training data and the validation / test data.  These formats
+    turn out to be the most convenient for use in our neural network
+    code."""
+    tr_d, va_d, te_d = load_data()
+    training_inputs = [np.reshape(x, (784, 1)) for x in tr_d[0]]
+    training_results = [vectorized_result(y) for y in tr_d[1]]
+    training_data = zip(training_inputs, training_results)
+    validation_inputs = [np.reshape(x, (784, 1)) for x in va_d[0]]
+    validation_data = zip(validation_inputs, va_d[1])
+    test_inputs = [np.reshape(x, (784, 1)) for x in te_d[0]]
+    test_data = zip(test_inputs, te_d[1])
+    return (training_data, validation_data, test_data)
+
+def vectorized_result(j):
+    """Return a 10-dimensional unit vector with a 1.0 in the jth
+    position and zeroes elsewhere.  This is used to convert a digit
+    (0...9) into a corresponding desired output from the neural
+    network."""
+    e = np.zeros((10, 1))
+    e[j] = 1.0
+    return e
+‘’‘
 
 前面我提到过程序的输出结果相当好。为什么？相对谁来说呢？如果有一个非神经网络的识别算法作为基线对比算法，那会很有帮助。最简单的基线对比算法是随机猜测数字。猜中的成功率是10%。对比来看我们的算法强太多了。
 
 稍微高级一些的基线算法呢？举个比较极端的例子，对比图片的亮度。包含数字2的图片要比数字图片1更暗一些，因为2有更多的像素是黑色的：
-xxxx [IMAGE]
+
+![IMAGE](img/5.png)
 
 然后，使用训练数据，计算每一个数字的平均暗度，0,1,2,...,9. 给定一张图片时，我们只需要计算这张图片的暗度，然后猜测它最接近哪个数字的暗度。以此来猜测是哪个数字。这个过程很简单，代码也容易写，这里不再详细列出来。如果你感兴趣可以去github上看一下。虽然简单，相对于随机猜测却是一个巨大的进步，它可以在10000张图片中猜中2225张，也就是说正确率是22.25%.
 
@@ -417,7 +517,7 @@ xxxx [IMAGE]
 不过，故事并未结束。9435个正确识别是基于SVM的默认算法。SVM有一些可调参数，你可以搜索到它们，用来优化提升它的默认性能。这里我就不详细讲述这点了。如果感兴趣你可以去看Addreas Mueller的博客。Mueller会给你看，如果SVM的参数调配得当，你可以得到98.5%的准确率。一个调校良好的SVM每识别70个数字的时候，才会出现一个错误。这相当好了。神经网络呢，可以做的更好吗？
 
 当然可以了，目前，设计良好的神经网络在MNSIT识别上完胜其它所有技术，包括SVM。当前的最好的记录时在10000个图片成功分类9979个，这个记录是由Li Wan, Matthew Zeiler, Sixin Zhang, Yann LeCun, 和 Rob Fergus保持的。这本书的稍后部分，我们将看到大多数他们使用过的技术。这个识别准确率已经接近人类水平，在识别一些人类都觉得困难的MNIST图片时，准确率甚至更高。
-  xxxx [IMAGE]
+  ![IMAGE](img/4.png)
 相信你也会觉得难以认出来。在MNIST图片集中类似的图片，神经网络可以从10000中的正确识别出来9979个，仅仅21个识别错误。正如解决识别MNIST手写数字这类困难问题 通常，在编程的时候，我们直觉认为算法会十分复杂。不过，即使在在前面所提到的Wan等人的论文中使用的神经网络，也仅仅包含了相当简单的算法和基于算法的变量，这些我们刚才都见到过了。某种程度说，他们的结果、我们的结果以及那些高级的论文，都说明了一个同样的问题：复杂的算法<=简单的学习算法+良好的训练数据
 
 ## 迈向深度学习
@@ -425,7 +525,8 @@ xxxx [IMAGE]
 尽管我们的神经网络表现十分出色。不过这个表现多少有些神秘。权重和偏移量是自动发现的。这意味我们无法解释网络是如何完成的。有可能找到一种办法来理解神经网络分类手写数字的原则吗？如果有这些原则，我们是不是可以做得更好？
   为了让问题更明确一些，加入在几十年之前，神经网络还未用于人工智能。我们理解这类智能网络是如何工作的吗？由于权重和偏移量是自动计算出来的，我们无法理解，神经网络也会一直对我们神秘下去。在人工智能研究的初始阶段，人们希望在构建人工智能的同时，可以增进对智能背后规则的理解，这或许可以帮助理解人类大脑的运行机制。不过或许，结果却是，不仅仅仍然无法理解人类大脑是如何运行的，甚至连人工智能是如何运行的也仍然无法理解。
    为了说明这个问题，我们回头看下在这章开始的时候提到的人工神经元，它指的是掂量输入信息的权重。假如我们打算识别一张图片是否是人脸：
-[IMAGE]
+
+![IMAGE](img/3.png)
 
 我们可以利用解决识别手写数字同样的方法来解决这个问题：把图片的像素作为神经网络的输入，网络的输出是单个神经元，代表是一张面孔或者不是。
  假如不用学习算法解决这问题，通过选择合适的权重和偏移量，手工建立一个网络，我们会怎么做？把神经网络丢在一边，我们可以选择的一个方法是把这个问题进行分解：这种图片的左上角有一只眼睛吗？右上角有一只眼睛吗？中间是否有一个鼻子？底部是否有一张嘴巴？顶部是否有头发？等等
@@ -433,10 +534,12 @@ xxxx [IMAGE]
 如果其中几个问题的大案是肯定的，或者大概率是肯定的，我们可以得出结论，图片中包含面孔。否则，如果大部分大案是否定的，就不包含。
 
 当然，这只是一个粗略的方案，有不少缺陷。比如一个人秃头，就没有头发，或者只能看到面孔的一部分，或者看到的是某个角度的面孔，有时候图片中的面孔特征比较模糊。不过，这个方案告诉我们，如果我们可以解决了神经网络的子问题，通过把这些子问题结合起来，或许就可以建立一个面部识别的神经网络。这里有一个可能的结构，每一个长方形代表一个子问题。请注意，它不一定是一个实际的解决方法，只是用来帮助我们理解网络是如何工作的。结构如下：
-[IAMGE]
+
+![IMAGE](img/2.png)
 
 它也可以说明网络是可以分解的。假如我们考虑的问题是左上角是否有一只眼睛，这个问题可以分解为几个子问题：是否有眉毛吗？是否有眼皮，是否有瞳孔？等等。当然，也需要包含对应的位置相关的信息：眉毛是不是在图片的左上部，并且在瞳孔的上方，诸如此类。我们先简化一下，网络是为了回答图片左上方是否有个眼睛这个问题，这样网络可以被分解为下图：
-[IMAGE]
+
+![IMAGE](img/1.png)
 
 这些问题可以被一层一层分解下去。最终，我们只需要设计能够回答简单问题的子网络，这些问题可以在单个像素层级得到答案。例如，这些问题可能是判断在图片中某一些点是否出现了某些简单的形状。这些问题可以由连接图片原始像素的神经元组来回答。
   最终的结果是，网络从回答一个复杂的问题(图片是否包含一张面孔)分解为几个可以在像素组级别回答的简单问题。由一系列数量众多的层级合力完成。最开始几个层级回答关于输入图片的简单和具体的问题，后面的层级通过层级结构来解决更复杂和抽象的问题。拥有这类多层级结构(包含两个甚至更多个隐藏层)的网络，称之为深度学习网络。
